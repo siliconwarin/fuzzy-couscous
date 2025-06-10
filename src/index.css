@@ -1,7 +1,5 @@
 /* Mobile-First Global Styles with iOS Safe Area Support - Tailwind 4 */
 @import "tailwindcss";
-@plugin "daisyui";
-
 
 :root {
   --background: oklch(0.96 0.03 240); /* Light blue background */
@@ -28,7 +26,6 @@
   --chat-bubble: oklch(0.9 0.05 240); /* Light blue bubble */
   --chat-text: oklch(0.2 0.01 240);
   --highlight: oklch(0.7 0.25 350); /* Pink highlight */
-
   --radius: 1rem;
 }
 
@@ -53,10 +50,6 @@
   --input: oklch(0.3 0.05 260);
   --ring: oklch(0.6 0.15 240);
 
-  /* Chat specific colors */
-  --chat-bubble: oklch(0.5 0.05 260 / 0.8); /* Semi-transparent gray bubble */
-  --chat-text: oklch(0.2 0.05 260);
-  --highlight: oklch(0.7 0.25 350); /* Pink highlight */
 }
 
 @theme inline {
@@ -82,7 +75,7 @@
   --color-chat-bubble: var(--chat-bubble);
   --color-chat-text: var(--chat-text);
   --color-highlight: var(--highlight);
-  --default-border-radius: var(--radius);
+  --default-border-radius: var(--radius);  
 }
 
 @keyframes highlight-glow {
@@ -99,43 +92,58 @@
   animation: highlight-glow 2s ease-in-out infinite;
 }
 
-/* Typography settings for Tailwind 4 */
-@theme inline {
-  --font-family: "Prompt", "Kanit", sans-serif;
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-weight-light: 300;
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-  --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
-  --letter-spacing-tight: -0.025em;
-  --letter-spacing-normal: 0;
-  --letter-spacing-wide: 0.025em;
+@layer base {
+  html, body {
+    @apply bg-background text-foreground;
+    font-family: "Prompt", "Kanit", sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
 }
 
-body {
-  font-family: var(--font-family);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
-  background-color: var(--background);
-  color: var(--foreground);
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+@layer components {
+  
+.bubble {
+  background: var(--color-chat-bubble);
+  color: var(--color-chat-text);
+  border-radius: var(--default-border-radius);
+  font: 400 1rem "Prompt", "Kanit", sans-serif;
+  position: relative;  
+  width: 300px;
+  background: #0099ff;
+  border-radius: 40px;
+  padding: 24px;
+  text-align: center;
+  color: #000;
 }
 
+.bubble-bottom-left:before {
+  content: "";
+  width: 0px;
+  height: 0px;
+  position: absolute;
+  border-left: 24px solid #0099ff;
+  border-right: 12px solid transparent;
+  border-top: 12px solid #0099ff;
+  border-bottom: 20px solid transparent;
+  left: 32px;
+  bottom: -24px;
+}
 
-.highlight-pink {
-  background-color: var(--highlight);
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-weight: var(--font-weight-semibold);
+  .highlight-pink {
+    @apply bg-pink-200 px-1 rounded;
+  }
 }
