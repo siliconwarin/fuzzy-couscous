@@ -1,69 +1,55 @@
-import type { UserSession, UserAnswer } from "@/types/quiz";
+import { v4 as uuidv4 } from "uuid";
+import type { UserAnswer, SurveyData } from "@/types/quiz";
 
-export const generateUUID = (): string => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
+const USER_SESSION_KEY = "scam-quiz-user-id";
+const RESULTS_KEY = "scam-quiz-results";
+
+export const initializeUserSession = (): string => {
+	const existingId = localStorage.getItem(USER_SESSION_KEY);
+	if (existingId) {
+		return existingId;
+	}
+
+	const userId = uuidv4();
+	localStorage.setItem(USER_SESSION_KEY, userId);
+
+	// Initialize empty results
+	localStorage.setItem(
+		RESULTS_KEY,
+		JSON.stringify({
+			userId,
+			answers: [],
+			surveyData: null,
+			startTime: new Date().toISOString(),
+		})
+	);
+
+	return userId;
 };
 
-export const initializeUserSession = (): UserSession => {
-  const uuid = generateUUID();
-  const session: UserSession = {
-    uuid,
-    answers: [],
-    startedAt: new Date()
-  };
-  
-  localStorage.setItem('scam-quiz-session', JSON.stringify(session));
-  return session;
-};
-
-export const getUserSession = (): UserSession | null => {
-  const stored = localStorage.getItem('scam-quiz-session');
-  if (!stored) return null;
-  
-  try {
-    const session = JSON.parse(stored);
-    session.startedAt = new Date(session.startedAt);
-    if (session.completedAt) {
-      session.completedAt = new Date(session.completedAt);
-    }
-    return session;
-  } catch {
-    return null;
-  }
-};
-
-export const updateUserSession = (session: UserSession): void => {
-  localStorage.setItem('scam-quiz-session', JSON.stringify(session));
+export const getUserSession = (): string | null => {
+	return localStorage.getItem(USER_SESSION_KEY);
 };
 
 export const addAnswerToSession = (answer: UserAnswer): void => {
-  const session = getUserSession();
-  if (!session) return;
-  
-  session.answers = session.answers.filter(a => a.questionId !== answer.questionId);
-  session.answers.push(answer);
-  updateUserSession(session);
+	const resultsData = localStorage.getItem(RESULTS_KEY);
+	if (!resultsData) {
+		return;
+	}
+
+	const results = JSON.parse(resultsData);
+	results.answers.push(answer);
+	localStorage.setItem(RESULTS_KEY, JSON.stringify(results));
 };
 
-export const completeSession = (): void => {
-  const session = getUserSession();
-  if (!session) return;
-  
-  session.completedAt = new Date();
-  updateUserSession(session);
-};
+export const addSurveyDataToSession = (surveyData: SurveyData): void => {
+	const resultsData = localStorage.getItem(RESULTS_KEY);
+	if (!resultsData) {
+		return;
+	}
 
-export const getPersonalityResult = (answers: UserAnswer[]): { type: "careful" | "trusting", score: number } => {
-  const carefulCount = answers.filter(a => a.personality === "careful").length;
-  const totalAnswers = answers.length;
-  const score = Math.round((carefulCount / totalAnswers) * 100);
-  
-  return {
-    type: carefulCount >= totalAnswers / 2 ? "careful" : "trusting",
-    score
-  };
+	const results = JSON.parse(resultsData);
+	results.surveyData = surveyData;
+	results.endTime = new Date().toISOString();
+	localStorage.setItem(RESULTS_KEY, JSON.stringify(results));
 };
