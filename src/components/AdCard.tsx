@@ -18,7 +18,6 @@ export const AdCard: React.FC<AdCardProps> = ({
 	image,
 	highlight,
 	showRedFlag = false,
-
 	shouldTearAway = false,
 }) => {
 	const renderContentWithHighlight = (showFlag: boolean) => {

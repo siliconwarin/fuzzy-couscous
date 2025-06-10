@@ -1,197 +1,102 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { addAnswerToSession, getUserSession } from "@/utils/userSession";
-import { quizQuestions } from "@/data/quizData";
-import ProgressBar from "@/components/ProgressBar";
-import { AdCard } from "@/components/AdCard";
-import { SmsCard } from "@/components/SmsCard";
-import ExplanationModal from "@/components/ExplanationModal";
-import ChoiceButton from "@/components/ChoiceButton";
-import MobileFrame from "@/components/MobileFrame";
+import { ChatHeader } from "@/components/ChatHeader";
+import { ChatMessage } from "@/components/ChatMessage";
+import { QuestionButton } from "@/components/QuestionButton";
+import { HighlightText } from "@/components/HighlightText";
+import { quizQuestions } from "@/data/dataQuiz";
 
 const Quiz = () => {
-	const navigate = useNavigate();
-	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-	const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-	const [isAnswered, setIsAnswered] = useState(false);
-	const [shouldTearAway, setShouldTearAway] = useState(false);
-	const [showRedFlag, setShowRedFlag] = useState(false);
-	const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
-	const [showExplanationModal, setShowExplanationModal] = useState(false);
+	const [isDark, setIsDark] = useState(false);
+	const [currentStep, setCurrentStep] = useState(0);
+	const [showExplanation, setShowExplanation] = useState(false);
+	const [highlightedText, setHighlightedText] = useState("");
+	const [hasAnswered, setHasAnswered] = useState(false);
 
-	const currentQuestion = quizQuestions[currentQuestionIndex];
-	const isLastQuestion = currentQuestionIndex === quizQuestions.length - 1;
-	const progress = currentQuestionIndex + 1;
-	const totalQuestions = quizQuestions.length;
+	// Use the first quiz question
+	const currentQuiz = quizQuestions[0];
 
+	// Apply dark mode to document
 	useEffect(() => {
-		const session = getUserSession();
-		if (!session) {
-			navigate("/");
-		}
-	}, [navigate]);
-
-	const handleAnswerSelect = (choiceId: string) => {
-		if (isAnswered) return;
-
-		const selectedChoice = currentQuestion.choices.find(
-			(c) => c.id === choiceId
-		);
-		if (!selectedChoice) return;
-
-		setSelectedAnswer(choiceId);
-		setIsAnswered(true);
-		setIsCorrectAnswer(selectedChoice.isCorrect);
-
-		addAnswerToSession({
-			questionId: currentQuestion.id.toString(),
-			choiceId,
-			isCorrect: selectedChoice.isCorrect,
-			personality: selectedChoice.personality,
-		});
-
-		// Animation sequence following the exact flow:
-		// 1. Answer selected → Start tear away animation
-		// 2. Original content tears away downward with rotation
-		// 3. Red flag content reveals from top
-		// 4. Show explanation modal
-		setTimeout(() => {
-			setShouldTearAway(true); // Start tear away animation
-
-			setTimeout(() => {
-				setShowRedFlag(true); // Reveal red flag content from top
-
-				setTimeout(() => {
-					setShowExplanationModal(true); // Show explanation modal
-				}, 1200); // Wait for red flag reveal to complete
-			}, 600); // Wait for tear away to start
-		}, 400); // Initial delay after answer selection
-	};
-
-	const handleNext = () => {
-		if (isLastQuestion) {
-			navigate("/survey");
+		if (isDark) {
+			document.documentElement.classList.add("dark");
 		} else {
-			// Reset all states for next question
-			setCurrentQuestionIndex((prev) => prev + 1);
-			setSelectedAnswer(null);
-			setIsAnswered(false);
-			setShouldTearAway(false);
-			setShowRedFlag(false);
-			setShowExplanationModal(false);
+			document.documentElement.classList.remove("dark");
 		}
-	};
+	}, [isDark]);
 
-	const renderQuestionContent = () => {
-		if (currentQuestion.type === "ads") {
-			return (
-				<AdCard
-					title="เงินสดด่วน อนุมัติไว"
-					content={currentQuestion.smsContent || ""}
-					image={currentQuestion.image}
-					highlight={currentQuestion.redflag}
-					showRedFlag={showRedFlag}
-					isAnswered={isAnswered}
-					shouldTearAway={shouldTearAway}
-				/>
-			);
-		}
+	const handleQuestionClick = (questionIndex: number) => {
+		console.log(`Question ${questionIndex + 1} clicked`);
 
-		return (
-			<SmsCard
-				content={currentQuestion.smsContent || ""}
-				highlight={currentQuestion.redflag}
-				showRedFlag={showRedFlag}
-				isAnswered={isAnswered}
-				shouldTearAway={shouldTearAway}
-			/>
-		);
+		setCurrentStep(1);
+		setHighlightedText(currentQuiz.choices[questionIndex].text);
+		setHasAnswered(true);
+
+		// Switch to dark theme when user answers
+		setIsDark(true);
+		setShowExplanation(true);
 	};
 
 	return (
-		<div
-			className={`h-screen w-full overflow-hidden relative transition-all duration-1000 ${
-				isAnswered
-					? "bg-gradient-to-br from-blue-900 via-indigo-900 to-blue-800"
-					: "bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600"
-			}`}
-		>
-			{/* Background Pattern */}
-			<div className="absolute inset-0 opacity-10">
-				<div
-					className="absolute inset-0"
-					style={{
-						backgroundImage: `radial-gradient(circle at 25% 25%, #ffffff 1px, transparent 1px),
-                           radial-gradient(circle at 75% 75%, #ffffff 1px, transparent 1px)`,
-						backgroundSize: "40px 40px",
-					}}
-				/>
-			</div>
-
-			{/* Main Container */}
-			<div className="h-full w-full max-w-md mx-auto relative z-10 flex flex-col pt-safe-area-inset-top pb-safe-area-inset-bottom">
-				{/* Fixed Progress Header */}
-				<div className="flex-none mb-4">
-					<div className="bg-white/90 backdrop-blur-md rounded-xl mx-4 shadow-lg">
-						<ProgressBar
-							current={progress}
-							total={totalQuestions}
-							answered={isAnswered}
-						/>
+		<div className="min-h-screen bg-background dark:bg-background transition-colors duration-300">
+			{/* Mobile-First Layout Container */}
+			<div className="flex flex-col h-screen max-w-md mx-auto bg-background dark:bg-background shadow-lg">
+				{/* Chat Header - Fixed at top */}
+				<div className="flex-shrink-0 mt-4 mx-4">
+					<ChatHeader />
+					{/* Messages Area - Scrollable middle section with padding */}
+					<div className="flex-1 h-[350px] overflow-y-auto pt-4 pb-4 ">
+						<div className="px-3 sm:px-4 space-y-3 sm:space-y-4">
+							{/* SMS Message */}
+							<ChatMessage
+								message={currentQuiz.smsContent}
+								link={currentQuiz.redflag}
+								hasAnswered={hasAnswered}
+							/>
+						</div>
 					</div>
 				</div>
 
-				{/* Mobile Frame with Content */}
-				<div className="flex-1 flex flex-col justify-center px-4">
-					<MobileFrame
-						shouldTearAway={shouldTearAway}
-						isAnswered={isAnswered}
-						className="w-full max-w-xs mx-auto"
-					>
-						{renderQuestionContent()}
-					</MobileFrame>
+				{/* Bottom Section - Questions or Explanation */}
+				<div className="flex-shrink-0">
+					{showExplanation && hasAnswered ? (
+						/* Explanation Section - Dark Theme */
+						<div className="p-4 sm:p-5 bg-background dark:bg-background">
+							<div className="p-4 sm:p-5 rounded-lg">
+								<p className="text-xs sm:text-sm text-foreground dark:text-foreground leading-relaxed">
+									กลโกงนี้เริ่มจากมิจฉาชีพโทรมาอ้างว่าคุณมีคดี
+									และหลอกให้แอดไลน์ไปคุยต่อ พร้อมส่ง
+									บัตรตำรวจหรือหมายเรียกปลอมมาให้ดู เพื่อ ทำให้คุณเชื่อและกลัว
+									จากนั้นจะอ้างจำเป็นต้องโอน เงินเพื่อตรวจสอบเส้นทางการเงิน
+									และกดดันให้ คุณรีบโอนโดยไม่ให้ปรึกษาใคร จำไว้ว่า{" "}
+									<HighlightText isHighlighted={true}>
+										{currentQuiz.redflag}
+									</HighlightText>{" "}
+									เป็นสัญญาณเตือนภัยที่ชัดเจน
+								</p>
+							</div>
+						</div>
+					) : (
+						/* Questions Section - Light Theme */
+						<div className="flex-1 h-[350px] pt-4 pb-4 px-8 bg-background dark:bg-background">
+							<p className="text-md text-foreground dark:text-foreground mb-3 sm:mb-4 text-start leading-relaxed">
+								{currentQuiz.scenario}
+							</p>
+							<div className="space-y-2 sm:space-y-3 flex flex-col items-center">
+								{currentQuiz.choices.map((choice, index) => (
+									<QuestionButton
+										key={choice.id}
+										text={choice.text}
+										onClick={() => handleQuestionClick(index)}
+										isVisible={!showExplanation}
+									/>
+								))}
+							</div>
+						</div>
+					)}
 				</div>
-
-				{/* Scenario Text - Hidden when answered */}
-				{!isAnswered && (
-					<div className="flex-none px-4 pb-4 mt-4">
-						<div className="bg-white/90 backdrop-blur-md rounded-xl p-4 shadow-lg">
-							<h2 className="text-sm font-medium text-center text-gray-800 leading-relaxed">
-								{currentQuestion.scenario}
-							</h2>
-						</div>
-					</div>
-				)}
-
-				{/* Choice Buttons - Hidden when answered */}
-				{!isAnswered && (
-					<div className="flex-none px-4 pb-4">
-						<div className="space-y-2">
-							{currentQuestion.choices.map((choice) => (
-								<ChoiceButton
-									key={choice.id}
-									choice={choice}
-									onClick={() => handleAnswerSelect(choice.id)}
-									isSelected={selectedAnswer === choice.id}
-									disabled={isAnswered}
-								/>
-							))}
-						</div>
-					</div>
-				)}
 			</div>
-
-			{/* Explanation Modal */}
-			<ExplanationModal
-				explanation={currentQuestion.explanation}
-				isCorrect={isCorrectAnswer}
-				onNext={handleNext}
-				isLastQuestion={isLastQuestion}
-				isOpen={showExplanationModal}
-				onClose={() => setShowExplanationModal(false)}
-			/>
 		</div>
 	);
 };

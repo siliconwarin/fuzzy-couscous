@@ -35,13 +35,19 @@ export interface QuizChoice {
 	personality: "careful" | "trusting";
 }
 
+export interface QuizExplanation {
+	correct: string;
+	incorrect: string;
+	redFlags: string[];
+}
+
 export interface QuizQuestion {
 	id: number;
 	type: "sms" | "ads";
 	scenario: string;
-	smsContent?: string;
+	smsContent: string;
+	redflag: string;
 	image?: string;
-	redflag?: string;
 	choices: QuizChoice[];
 	explanation: QuizExplanation;
 }
