@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 interface AdCardProps {
@@ -6,11 +8,11 @@ interface AdCardProps {
 	image?: string;
 	highlight?: string;
 	showRedFlag?: boolean;
-
+	isAnswered?: boolean;
 	shouldTearAway?: boolean;
 }
 
-const AdCard: React.FC<AdCardProps> = ({
+export const AdCard: React.FC<AdCardProps> = ({
 	title,
 	content,
 	image,
@@ -41,90 +43,101 @@ const AdCard: React.FC<AdCardProps> = ({
 		);
 	};
 
-	// เนื้อหาปกติ (อยู่ในเครื่องเดิมที่จะร่วง)
-	const normalContent = (
-		<div className="p-3">
-			<div className="bg-indigo-800 rounded-lg overflow-hidden shadow-lg">
-				{/* Ad Header */}
-				<div className="bg-pink-500 p-2 flex items-center">
-					<span className="text-white font-bold">🏳️ {title}</span>
-				</div>
+	return (
+		<div className="relative h-full">
+			{/* Layer 1: Original Content - Tears away downward with rotation */}
+			<div
+				className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
+					shouldTearAway
+						? "opacity-0 transform rotate-[10deg] translate-y-full scale-95"
+						: "opacity-100 transform rotate-0 translate-y-0 scale-100"
+				}`}
+			>
+				<div className="p-3">
+					<div className="bg-indigo-800 rounded-lg overflow-hidden">
+						{/* Ad Header */}
+						<div className="bg-pink-500 p-2 flex items-center">
+							<span className="text-white font-bold">🏳️ {title}</span>
+						</div>
 
-				{/* Ad Content */}
-				<div className="p-4 text-white space-y-2">
-					<div className="text-sm">{renderContentWithHighlight(false)}</div>
+						{/* Ad Content */}
+						<div className="p-4 text-white space-y-2">
+							<div className="text-sm">{renderContentWithHighlight(false)}</div>
 
-					<div className="flex justify-end">
-						{image && (
-							<img
-								src={image || "/placeholder.svg"}
-								alt="Advertisement"
-								className="w-20 h-20 object-contain rounded-lg"
-								onError={(e) => {
-									e.currentTarget.src = "/placeholder.svg?height=80&width=80";
-								}}
-							/>
-						)}
-					</div>
-				</div>
-			</div>
-		</div>
-	);
-
-	// เนื้อหา Red Flag (สำหรับเครื่องใหม่)
-	const redFlagContent = (
-		<div className="p-3">
-			<div className="bg-red-900 rounded-lg overflow-hidden shadow-2xl border-2 border-red-400 animate-pulse">
-				{/* Ad Header - แสดงเตือนภัย */}
-				<div className="bg-red-600 p-2 flex items-center justify-between">
-					<span className="text-white font-bold">🚨 {title}</span>
-					<span className="text-yellow-300 animate-bounce">⚠️ SCAM!</span>
-				</div>
-
-				{/* Ad Content with Red Flag */}
-				<div className="p-4 text-white space-y-2 relative">
-					<div className="text-sm">{renderContentWithHighlight(true)}</div>
-
-					<div className="flex justify-end">
-						{image && (
-							<div className="relative">
-								<img
-									src={image || "/placeholder.svg"}
-									alt="Advertisement"
-									className="w-20 h-20 object-contain rounded-lg opacity-75"
-									onError={(e) => {
-										e.currentTarget.src = "/placeholder.svg?height=80&width=80";
-									}}
-								/>
-								{/* Warning overlay บนรูป */}
-								<div className="absolute inset-0 bg-red-500 bg-opacity-30 rounded-lg flex items-center justify-center">
-									<span className="text-white text-2xl animate-pulse">🚫</span>
-								</div>
+							<div className="flex justify-end">
+								{image && (
+									<img
+										src={image || "/placeholder.svg"}
+										alt="Advertisement"
+										className="w-20 h-20 object-contain rounded-lg"
+										onError={(e) => {
+											e.currentTarget.src =
+												"/placeholder.svg?height=80&width=80";
+										}}
+									/>
+								)}
 							</div>
-						)}
+						</div>
 					</div>
+				</div>
+			</div>
 
-					{/* Warning Message */}
-					<div className="bg-red-800 border-2 border-red-400 rounded-lg p-2 mt-3">
-						<p className="text-yellow-300 text-xs font-bold animate-pulse">
-							🔥 นี่คือ การฉ้อโกง! อย่าคลิกลิงก์หรือให้ข้อมูล!
-						</p>
+			{/* Layer 2: Red Flag Content - Reveals from top */}
+			<div
+				className={`absolute inset-0 transition-all duration-800 ease-out ${
+					shouldTearAway && showRedFlag
+						? "opacity-100 transform translate-y-0"
+						: "opacity-0 transform -translate-y-4"
+				}`}
+				style={{
+					transitionDelay: shouldTearAway ? "500ms" : "0ms",
+				}}
+			>
+				<div className="p-3">
+					<div className="bg-indigo-800 rounded-lg overflow-hidden">
+						{/* Ad Header */}
+						<div className="bg-pink-500 p-2 flex items-center">
+							<span className="text-white font-bold">🏳️ {title}</span>
+						</div>
+
+						{/* Ad Content with Red Flag */}
+						<div className="p-4 text-white space-y-2">
+							<div className="text-sm">{renderContentWithHighlight(true)}</div>
+
+							<div className="flex justify-end">
+								{image && (
+									<img
+										src={image || "/placeholder.svg"}
+										alt="Advertisement"
+										className="w-20 h-20 object-contain rounded-lg"
+										onError={(e) => {
+											e.currentTarget.src =
+												"/placeholder.svg?height=80&width=80";
+										}}
+									/>
+								)}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{/* Spacer to maintain height */}
+			<div className="invisible">
+				<div className="p-3">
+					<div className="bg-indigo-800 rounded-lg">
+						<div className="bg-pink-500 p-2">
+							<span className="text-white font-bold">🏳️ {title}</span>
+						</div>
+						<div className="p-4 text-white">
+							<div className="text-sm">{content}</div>
+							<div className="flex justify-end mt-2">
+								<div className="w-20 h-20"></div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	);
-
-	// ถ้าต้องการให้มือถือร่วง ให้ return เป็น object ที่มีทั้ง 2 เนื้อหา
-	if (shouldTearAway) {
-		return {
-			normalContent,
-			redFlagContent: showRedFlag ? redFlagContent : normalContent,
-		};
-	}
-
-	// ถ้าไม่ร่วง ให้แสดงแบบเดิม
-	return normalContent;
 };
-
-export default AdCard;

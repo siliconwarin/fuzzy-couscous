@@ -14,6 +14,10 @@ const SurveyForm = ({ onSubmit }: SurveyFormProps) => {
 		age: "",
 		experience: "",
 		frequency: "",
+		gender: "",
+		education: "",
+		digitalLiteracy: "",
+		previousScamExperience: false,
 	});
 
 	const handleSubmit = () => {

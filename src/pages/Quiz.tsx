@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { addAnswerToSession, getUserSession } from "@/utils/userSession";
 import { quizQuestions } from "@/data/quizData";
 import ProgressBar from "@/components/ProgressBar";
-import AdCard from "@/components/AdCard";
-import SmsCard from "@/components/SmsCard";
+import { AdCard } from "@/components/AdCard";
+import { SmsCard } from "@/components/SmsCard";
 import ExplanationModal from "@/components/ExplanationModal";
 import ChoiceButton from "@/components/ChoiceButton";
 import MobileFrame from "@/components/MobileFrame";
@@ -92,8 +92,8 @@ const Quiz = () => {
 					content={currentQuestion.smsContent || ""}
 					image={currentQuestion.image}
 					highlight={currentQuestion.redflag}
-					showRedFlag={showRedFlag} // คง showRedFlag ไว้ เพราะ AdCard และ SmsCard ยังใช้ในการตัดสินใจว่าจะแสดง redFlagContent หรือ normalContent เมื่อ shouldTearAway เป็น true
-					// isAnswered={isAnswered} // ลบออก
+					showRedFlag={showRedFlag}
+					isAnswered={isAnswered}
 					shouldTearAway={shouldTearAway}
 				/>
 			);
@@ -103,34 +103,12 @@ const Quiz = () => {
 			<SmsCard
 				content={currentQuestion.smsContent || ""}
 				highlight={currentQuestion.redflag}
-				showRedFlag={showRedFlag} // คง showRedFlag ไว้
-				// isAnswered={isAnswered} // ลบออก
+				showRedFlag={showRedFlag}
+				isAnswered={isAnswered}
 				shouldTearAway={shouldTearAway}
 			/>
 		);
 	};
-
-	const questionCardOutput = renderQuestionContent();
-	let normalCardContent: React.ReactNode;
-	let redFlagCardContent: React.ReactNode | undefined;
-
-	if (
-		typeof questionCardOutput === "object" &&
-		questionCardOutput !== null &&
-		"normalContent" in questionCardOutput
-	) {
-		// กรณี AdCard/SmsCard return object { normalContent, redFlagContent }
-		normalCardContent = (questionCardOutput as { normalContent: JSX.Element })
-			.normalContent;
-		redFlagCardContent = (questionCardOutput as { redFlagContent: JSX.Element })
-			.redFlagContent;
-	} else {
-		// กรณี AdCard/SmsCard return JSX.Element โดยตรง
-		normalCardContent = questionCardOutput as JSX.Element;
-		// redFlagChildren ใน MobileFrame สามารถเป็น undefined ได้ ถ้าไม่มีเนื้อหาเฉพาะสำหรับ red flag
-		// หรือจะให้แสดง normalContent ซ้ำก็ได้ ขึ้นอยู่กับการออกแบบ
-		redFlagCardContent = normalCardContent;
-	}
 
 	return (
 		<div
@@ -169,11 +147,10 @@ const Quiz = () => {
 				<div className="flex-1 flex flex-col justify-center px-4">
 					<MobileFrame
 						shouldTearAway={shouldTearAway}
-						// isAnswered={isAnswered} // ลบออก
+						isAnswered={isAnswered}
 						className="w-full max-w-xs mx-auto"
-						redFlagChildren={redFlagCardContent} // ส่ง redFlagContent ที่เตรียมไว้
 					>
-						{normalCardContent} {/* ส่ง normalContent ที่เตรียมไว้ */}
+						{renderQuestionContent()}
 					</MobileFrame>
 				</div>
 
