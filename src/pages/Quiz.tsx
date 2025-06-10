@@ -9,9 +9,9 @@ import { quizQuestions } from "@/data/dataQuiz";
 
 const Quiz = () => {
 	const [isDark, setIsDark] = useState(false);
-	const [currentStep, setCurrentStep] = useState(0);
+	/* 	const [currentStep, setCurrentStep] = useState(0); */
 	const [showExplanation, setShowExplanation] = useState(false);
-	const [highlightedText, setHighlightedText] = useState("");
+	/* 	const [highlightedText, setHighlightedText] = useState(""); */
 	const [hasAnswered, setHasAnswered] = useState(false);
 
 	// Use the first quiz question
@@ -29,8 +29,8 @@ const Quiz = () => {
 	const handleQuestionClick = (questionIndex: number) => {
 		console.log(`Question ${questionIndex + 1} clicked`);
 
-		setCurrentStep(1);
-		setHighlightedText(currentQuiz.choices[questionIndex].text);
+		/* 	setCurrentStep(1);
+		setHighlightedText(currentQuiz.choices[questionIndex].text); */
 		setHasAnswered(true);
 
 		// Switch to dark theme when user answers
