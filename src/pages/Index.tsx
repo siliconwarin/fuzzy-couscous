@@ -13,19 +13,19 @@ const Index: React.FC = () => {
 	};
 
 	return (
-		<div className="h-screen bg-gradient-to-b from-blue-50 to-blue-100 flex flex-col items-center justify-center p-4 overflow-hidden">
-			<Card className="w-full max-w-md mx-auto flex flex-col h-full max-h-[90vh]">
-				<CardHeader className="text-center pt-safe-area-inset-top">
-					<CardTitle className="text-xl font-bold text-blue-900 mb-1">
+		<div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 flex items-center justify-center p-4">
+			<Card className="w-full max-w-md mx-auto">
+				<CardHeader className="text-center">
+					<CardTitle className="text-2xl font-bold text-blue-900 mb-2">
 						🛡️ Scam Savvy
 					</CardTitle>
-					<p className="text-sm text-blue-700">ทดสอบความรู้เรื่องการหลอกลวงออนไลน์</p>
+					<p className="text-blue-700">ทดสอบความรู้เรื่องการหลอกลวงออนไลน์</p>
 				</CardHeader>
 
-				<CardContent className="flex-1 flex flex-col justify-between space-y-4 overflow-y-auto p-4">
-					<div className="bg-blue-50 p-3 rounded-lg">
-						<h3 className="font-semibold text-blue-800 mb-1 text-base">วิธีเล่น:</h3>
-						<ul className="text-xs text-blue-700 space-y-0.5">
+				<CardContent className="space-y-6">
+					<div className="bg-blue-50 p-4 rounded-lg">
+						<h3 className="font-semibold text-blue-800 mb-2">วิธีเล่น:</h3>
+						<ul className="text-sm text-blue-700 space-y-1">
 							<li>• อ่านสถานการณ์ที่กำหนดให้</li>
 							<li>• เลือกคำตอบที่คุณคิดว่าถูกต้อง</li>
 							<li>• เรียนรู้เหตุผลและสัญญาณเตือนภัย</li>
@@ -35,7 +35,7 @@ const Index: React.FC = () => {
 
 					<Button
 						onClick={handleStartQuiz}
-						className="w-full text-base py-3 min-h-[48px]"
+						className="w-full text-lg py-6"
 						size="lg"
 					>
 						เริ่มเล่น 🎮
