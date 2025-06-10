@@ -3,13 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import type { UserAnswer, SurveyData, QuizResult } from "@/types/quiz";
+import type { UserAnswer, QuizResult } from "@/types/quiz";
 import { Trophy, RotateCcw, Share2 } from "lucide-react";
 
 const Result = () => {
 	const navigate = useNavigate();
 	const [result, setResult] = useState<QuizResult | null>(null);
-	const [surveyData, setSurveyData] = useState<SurveyData | null>(null);
 
 	useEffect(() => {
 		const savedData = localStorage.getItem("scam-quiz-results");
@@ -18,8 +17,7 @@ const Result = () => {
 			return;
 		}
 
-		const { answers, surveyData: survey } = JSON.parse(savedData);
-		setSurveyData(survey);
+		const { answers } = JSON.parse(savedData);
 
 		// Calculate results
 		const correctAnswers = answers.filter(
