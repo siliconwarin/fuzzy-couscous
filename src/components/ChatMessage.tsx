@@ -7,7 +7,7 @@ interface ChatMessageProps {
 }
 
 export const ChatMessage = ({
-	message,
+	message = "",
 	redflag = "redflag",
 	hasAnswered,
 }: ChatMessageProps) => {
@@ -15,7 +15,7 @@ export const ChatMessage = ({
 		<div className="flex justify-start pl-4 pt-4">
 			<div className="bubble bubble-bottom-left bg-primary">
 				<p className="text-md text-chat-text dark:text-chat-text mb-3 sm:mb-4 text-start leading-relaxed break-words whitespace-pre-line">
-					{redflag && message.includes(redflag)
+					{redflag && message?.includes(redflag)
 						? message.split(redflag).map((part, index, array) => (
 								<span key={index}>
 									{part}

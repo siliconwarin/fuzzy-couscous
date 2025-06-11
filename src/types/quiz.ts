@@ -41,14 +41,29 @@ export interface QuizExplanation {
 	redFlags: string[];
 }
 
+export interface Sender {
+  name: string;
+  avatar: string;
+  time: string;
+}
+
+export interface AdContent {
+  title: string;
+  description: string;
+  image?: string;
+  url: string;
+}
+
 export interface QuizQuestion {
-	id: number;
-	title?: string;
-	type: "sms" | "ads" | "social" | "chat";
-	scenario: string;
-	content: string;
-	redflag: string;
-	image?: string;
+  id: number;
+  type: "sms" | "ads" | "social" | "chat";
+  scenario: string;
+  content: string;
+  message: string;
+  redflag: string;
+  image?: string;
+  sender: Sender;
+  ad?: AdContent;
 	choices: QuizChoice[];
 	explanation: QuizExplanation;
 }
