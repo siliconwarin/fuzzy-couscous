@@ -43,6 +43,7 @@ export interface QuizExplanation {
 
 export interface QuizQuestion {
 	id: number;
+	title?: string;
 	type: "sms" | "ads" | "social" | "chat";
 	scenario: string;
 	content: string;

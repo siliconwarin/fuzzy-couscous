@@ -55,7 +55,7 @@ export const quizQuestions: QuizQuestion[] = [
 		content:
 			"เงินสดด่วน อนุมัติไว\n\nไม่ตรวจสอบเครดิต\nไม่ต้องใช้เอกสารใดๆ\nดอกน้อยร้อยละ 0.5\nเงินเข้าใน 3 นาที",
 		redflag: "เงินสดด่วน อนุมัติไว",
-		image: "/public/ads-1.png",
+		image: "/public/ads-2.png",
 		choices: [
 			{
 				id: "2a",
