@@ -102,7 +102,7 @@ const Result = () => {
 
 	return (
 		<div className="h-screen bg-linear-to-br from-quiz-blue to-quiz-blue-dark p-4 flex flex-col overflow-hidden">
-			<div className="max-w-md mx-auto w-full flex-1 flex flex-col pt-safe-area-inset-top">
+			<div className="max-w-md mx-auto my-12 w-full flex-1 flex flex-col pt-safe-area-inset-top">
 				<Card className="mb-4 flex-1 flex flex-col overflow-hidden">
 					<CardHeader className="text-center flex-none">
 						<div className="flex justify-center mb-2">

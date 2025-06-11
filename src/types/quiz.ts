@@ -45,7 +45,7 @@ export interface QuizQuestion {
 	id: number;
 	type: "sms" | "ads" | "social" | "chat";
 	scenario: string;
-	smsContent: string;
+	content: string;
 	redflag: string;
 	image?: string;
 	choices: QuizChoice[];

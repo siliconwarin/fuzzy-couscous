@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ChatHeader } from "@/components/ChatHeader";
 import { ChatMessage } from "@/components/ChatMessage";
 import { QuestionButton } from "@/components/QuestionButton";
@@ -8,14 +9,23 @@ import { quizQuestions } from "@/data/dataQuiz";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AdCard } from "@/components/AdCard";
+import type { UserAnswer } from "@/types/quiz";
 
 const Quiz = () => {
+	const navigate = useNavigate();
 	const [isDark, setIsDark] = useState(false);
 	const [showExplanation, setShowExplanation] = useState(false);
 	const [hasAnswered, setHasAnswered] = useState(false);
+	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+	const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
+	const [selectedChoiceIndex, setSelectedChoiceIndex] = useState<number | null>(
+		null
+	);
 	const isMobile = useIsMobile();
 
-	const currentQuiz = quizQuestions[0];
+	const currentQuiz = quizQuestions[currentQuestionIndex];
+	const isLastQuestion = currentQuestionIndex === quizQuestions.length - 1;
+	const progress = ((currentQuestionIndex + 1) / quizQuestions.length) * 100;
 
 	useEffect(() => {
 		if (isDark) {
@@ -27,9 +37,43 @@ const Quiz = () => {
 
 	const handleQuestionClick = (questionIndex: number) => {
 		console.log(`Question ${questionIndex + 1} clicked`);
+		const selectedChoice = currentQuiz.choices[questionIndex];
+
+		setSelectedChoiceIndex(questionIndex);
 		setHasAnswered(true);
 		setIsDark(true);
 		setShowExplanation(true);
+
+		// Save user answer
+		const userAnswer: UserAnswer = {
+			questionId: currentQuiz.id.toString(),
+			choiceId: selectedChoice.id,
+			isCorrect: selectedChoice.isCorrect,
+			personality: selectedChoice.personality,
+		};
+
+		setUserAnswers((prev) => [...prev, userAnswer]);
+	};
+
+	const handleNextQuestion = () => {
+		if (isLastQuestion) {
+			// Save answers to localStorage for survey/result pages
+			const quizData = {
+				answers: userAnswers,
+				completedAt: new Date().toISOString(),
+			};
+			localStorage.setItem("scam-quiz-results", JSON.stringify(quizData));
+
+			// Navigate to survey
+			navigate("/survey");
+		} else {
+			// Move to next question
+			setCurrentQuestionIndex((prev) => prev + 1);
+			setShowExplanation(false);
+			setHasAnswered(false);
+			setIsDark(false);
+			setSelectedChoiceIndex(null);
+		}
 	};
 
 	return (
@@ -47,34 +91,39 @@ const Quiz = () => {
 			{/* Top: Progress */}
 			<div className="pt-4">
 				<div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-					<div className="w-1/2 h-full bg-green-500 transition-all"></div>
+					<div
+						className="h-full bg-green-500 transition-all duration-500"
+						style={{ width: `${progress}%` }}
+					></div>
 				</div>
 			</div>
+
 			{/* Scenario Section */}
 			{currentQuiz.type === "ads" ? (
 				<div className="flex flex-col flex-shrink-0 px-4 pt-4 mt-4">
-					<ChatHeader />
-					<AdCard
-						title="โฆษณาเงินกู้"
-						content={currentQuiz.smsContent}
-						image={currentQuiz.image}
-						highlight={currentQuiz.redflag}
-						showRedFlag={hasAnswered}
-						shouldTearAway={hasAnswered}
-					/>
+					<div className="bg-white overflow-y-auto shadow-inner max-h-[calc(50vh-64px)] min-h-[40dvh]">
+						<AdCard
+							content={currentQuiz.content}
+							image={currentQuiz.image}
+							highlight={currentQuiz.redflag}
+							showRedFlag={hasAnswered}
+							shouldTearAway={hasAnswered}
+						/>
+					</div>
 				</div>
 			) : (
 				<div className="flex flex-col flex-shrink-0 px-4 pt-4 mt-4">
 					<ChatHeader />
 					<div className="bg-white overflow-y-auto shadow-inner max-h-[calc(50vh-64px)] min-h-[40dvh]">
 						<ChatMessage
-							message={currentQuiz.smsContent}
+							message={currentQuiz.content}
 							redflag={currentQuiz.redflag}
 							hasAnswered={hasAnswered}
 						/>
 					</div>
 				</div>
 			)}
+
 			{/* Bottom Section */}
 			<div className="relative w-full max-w-md mx-auto flex-grow px-4 pb-[env(safe-area-inset-bottom)]">
 				{/* Explanation Overlay */}
@@ -88,7 +137,10 @@ const Quiz = () => {
 					<div className="p-4 space-y-4 bg-yellow-400 shadow-2xl border-4 border-yellow-500 mt-4">
 						<div className="text-sm text-gray-900 leading-relaxed font-medium">
 							<p className="whitespace-pre-line">
-								{currentQuiz.explanation.correct}
+								{selectedChoiceIndex !== null &&
+								currentQuiz.choices[selectedChoiceIndex]?.isCorrect
+									? currentQuiz.explanation.correct
+									: currentQuiz.explanation.incorrect}
 							</p>
 						</div>
 						{currentQuiz.explanation.redFlags?.length > 0 && (
@@ -110,14 +162,10 @@ const Quiz = () => {
 							</div>
 						)}
 						<button
-							onClick={() => {
-								setShowExplanation(false);
-								setHasAnswered(false);
-								setIsDark(false);
-							}}
+							onClick={handleNextQuestion}
 							className="w-full min-h-[52px] text-base font-bold rounded-2xl bg-green-500 hover:bg-green-600 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 mt-2"
 						>
-							ดูผลลัพธ์
+							{isLastQuestion ? "ไปแบบสำรวจ" : "ข้อถัดไป"}
 						</button>
 					</div>
 				</div>
