@@ -55,7 +55,7 @@ export const quizQuestions: QuizQuestion[] = [
 		smsContent:
 			"เงินสดด่วน อนุมัติไว\n\nไม่ตรวจสอบเครดิต\nไม่ต้องใช้เอกสารใดๆ\nดอกน้อยร้อยละ 0.5\nเงินเข้าใน 3 นาที",
 		redflag: "เงินสดด่วน อนุมัติไว",
-		image: "/placeholder.svg?height=100&width=100",
+		image: "/public/ads-1.png",
 		choices: [
 			{
 				id: "2a",
@@ -91,7 +91,7 @@ export const quizQuestions: QuizQuestion[] = [
 				"ดอกเบี้ยต่ำผิดปกติ 0.5%",
 				"ไม่ตรวจสอบเครดิต",
 				"อนุมัติเร็วผิดปกติ 3 นาที",
-				"ไม่ต้องเอกสาร",
+				"ไม่ต้องมีเอกสาร",
 			],
 		},
 	},
