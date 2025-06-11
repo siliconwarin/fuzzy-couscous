@@ -29,9 +29,9 @@ export const ScenarioSection = ({ quiz, hasAnswered }: ScenarioSectionProps) => 
               opacity: 0,
               y: 300,
               x: -100,
-              rotate: -15,
+              rotate: -50,
               transition: { 
-                duration: 0.4, // Faster animation
+                duration: 1, // Faster animation
                 ease: [0.65, 0, 0.35, 1], // More snappy easing
               }
             }}
